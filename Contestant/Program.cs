@@ -1,10 +1,7 @@
 ﻿using Contestant.Logic;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Contestant
@@ -22,7 +19,7 @@ namespace Contestant
         {
             return Task.Run(() =>
             {
-                var host = Dns.GetHostEntry(Dns.GetHostName());
+                var host = Dns.GetHostEntry("localhost");
                 var ipAddress = host.AddressList[host.AddressList.Length - 1];
                 var remoteEndpoint = new IPEndPoint(ipAddress, 2092);
 

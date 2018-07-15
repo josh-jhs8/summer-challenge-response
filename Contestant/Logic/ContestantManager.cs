@@ -3,10 +3,7 @@ using Challenger.Model.Player;
 using Challenger.Model.PlayerAction;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Contestant.Logic
 {
