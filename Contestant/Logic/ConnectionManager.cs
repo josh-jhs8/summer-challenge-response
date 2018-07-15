@@ -9,6 +9,7 @@ namespace Contestant.Logic
     public class ConnectionManager
     {
         private Socket _connection;
+        private object _processingLock = new object();
 
         public ConnectionManager(Socket connection)
         {
@@ -20,10 +21,15 @@ namespace Contestant.Logic
             var cmdJson = JsonConvert.SerializeObject(command);
             Console.WriteLine($"Sending: {cmdJson}");
             var cmd = Encoding.UTF8.GetBytes(cmdJson);
-            _connection.Send(cmd);
 
             byte[] data = new byte[1000000];
-            var dataSize = _connection.Receive(data);
+            int dataSize;
+            lock (_processingLock)
+            {
+                _connection.Send(cmd);
+                dataSize = _connection.Receive(data);
+            }
+            
             byte[] resultData = new byte[dataSize];
             Array.Copy(data, resultData, dataSize);
 

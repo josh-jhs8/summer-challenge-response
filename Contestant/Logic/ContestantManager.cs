@@ -25,6 +25,13 @@ namespace Contestant.Logic
         {
             GetListOfShips();
 
+            new ExplorationManager(_ships, _systems, _connection).Explore().Wait();
+
+            foreach (var system in _systems)
+            {
+                Console.WriteLine(system.Name);
+            }
+
             _connection.Close();
         }
 
@@ -41,7 +48,7 @@ namespace Contestant.Logic
             if (result.Success)
             {
                 _ships = result.ResultObject;
-                Console.Write("Got list of ships:");
+                Console.WriteLine("Got list of ships:");
                 foreach (var ship in _ships) Console.WriteLine($"\t{ship.Name}");
             }
             else

@@ -47,6 +47,8 @@
   <ItemGroup>
     <Compile Include="Logic\ConnectionManager.cs" />
     <Compile Include="Logic\ContestantManager.cs" />
+    <Compile Include="Logic\ExplorationManager.cs" />
+    <Compile Include="Logic\ShipManager.cs" />
     <Compile Include="Model\ChallengeConfiguration.cs" />
     <Compile Include="Model\Map\Planet.cs" />
     <Compile Include="Model\Map\SolarSystem.cs" />
