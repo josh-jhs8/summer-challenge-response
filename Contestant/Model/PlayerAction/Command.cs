@@ -11,7 +11,5 @@ namespace Challenger.Model.PlayerAction
         public string Action { get; set; }
 
         public List<string> Arguments { get; set; }
-
-        public string ExpectedReturnType { get; set; }
     }
 }
