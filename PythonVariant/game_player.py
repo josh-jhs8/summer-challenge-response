@@ -38,14 +38,14 @@ class GamePlayer:
 					#Go unexplored or go back
 					dest = self.get_unexplored_system(curr_system["Hyperlanes"])
 					if dest == None:
-						if ship["Name"] in ship_path and len(ship_path[ship[Name]]) > 0:
+						if ship["Name"] in ship_path and len(ship_path[ship["Name"]]) > 0:
 							dest = ship_path[ship["Name"]].pop()
 						else:
 							continue
 					else:
 						if ship["Name"] not in ship_path:
 							ship_path[ship["Name"]] = []
-						ship_path[ship["Name"]].append(dest)
+						ship_path[ship["Name"]].append(curr_system["Name"])
 					self.ship_move(ship, dest)
 			#Have we finished yet?
 			accessable = self.get_accessable_systems(accessable)

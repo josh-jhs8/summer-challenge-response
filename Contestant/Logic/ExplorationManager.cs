@@ -60,7 +60,7 @@ namespace Contestant.Logic
                         else
                         {
                             if (!shipPath.ContainsKey(ship)) shipPath.Add(ship, new Stack<string>());
-                            shipPath[ship].Push(destination);
+                            shipPath[ship].Push(currentSystem.Name);
                         }
 
                         _manager.Move(ship, destination);
