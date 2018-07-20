@@ -21,9 +21,10 @@ def observe(conn, ship):
 		print("Planets:")
 		for planet in system["Planets"]:
 			print("\t" + planet["Name"])
-		print("Hyperlanes")
+		print("Hyperlanes:")
 		for lane in system["Hyperlanes"]:
 			print("\t" + lane)
+		print("Location: (" + str(system["Location"]["X"]) + ", " + str(system["Location"]["Y"]) + ")")
 		return system
 	else:
 		raise RuntimeError("Observe command failed")
@@ -33,6 +34,8 @@ def list(conn):
 	data = conn.run_command(cmd)
 	if data["Success"]:
 		ships = data["ResultObject"]
+		for ship in ships:
+			print(ship["Name"] + " starts in " + ship["Location"])
 		return ships
 	else:
 		raise RuntimeError("List command failed")

@@ -1,16 +1,17 @@
 import ship_commands as sc
+import threading as t
 
-class ExplorationManager:
+class ExplorationManager(t.Thread):
 	def __init__(self, conn, state):
 		self.conn = conn
 		self.state = state
+		super().__init__()
 
-	def explore(self):
+	def run(self):
 		print("Beginning to explore...")
 		ship_path = {}
 
 		while True:
-			print("Large loop")
 			systems = self.state.get_systems()
 			ships = self.state.get_ships()
 			#Have we observerd all the systems we're in
@@ -28,7 +29,6 @@ class ExplorationManager:
 				return
 			#We haven't gone everywhere yet
 			for ship in ships:
-				print("Ship Loop")
 				curr_system = get_system_by_name(ship["Location"], systems)
 				#Go unexplored or go back
 				dest = None
@@ -56,6 +56,8 @@ def get_accessable_systems(ships = [], systems = []):
 		if ship["Location"] not in accessable:
 			accessable.append(ship["Location"])
 	for system in systems:
+		if system["Name"] not in accessable:
+			accessable.append(system["Name"])
 		for lane in system["Hyperlanes"]:
 			if lane not in accessable:
 				accessable.append(lane)
