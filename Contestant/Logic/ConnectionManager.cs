@@ -1,4 +1,5 @@
-﻿using Challenger.Model.PlayerAction;
+﻿using ChallengeModel.PlayerAction;
+using Challenger.Model;
 using Newtonsoft.Json;
 using System;
 using System.Net.Sockets;

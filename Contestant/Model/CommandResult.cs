@@ -1,4 +1,4 @@
-﻿namespace Challenger.Model.PlayerAction
+﻿namespace Challenger.Model
 {
     public class CommandResult<T>
     {

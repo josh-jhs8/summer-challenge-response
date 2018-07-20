@@ -1,6 +1,6 @@
-﻿using Challenger.Model.Map;
-using Challenger.Model.Player;
-using Challenger.Model.PlayerAction;
+﻿using ChallengeModel.Map;
+using ChallengeModel.Player;
+using ChallengeModel.PlayerAction;
 using System;
 using System.Collections.Generic;
 using System.Net.Sockets;

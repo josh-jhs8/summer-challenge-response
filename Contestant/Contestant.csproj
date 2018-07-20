@@ -32,6 +32,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ChallengeModel, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ChallengeModel.1.0.0\lib\net452\ChallengeModel.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -49,13 +52,7 @@
     <Compile Include="Logic\ContestantManager.cs" />
     <Compile Include="Logic\ExplorationManager.cs" />
     <Compile Include="Logic\ShipManager.cs" />
-    <Compile Include="Model\ChallengeConfiguration.cs" />
-    <Compile Include="Model\Map\Planet.cs" />
-    <Compile Include="Model\Map\SolarSystem.cs" />
-    <Compile Include="Model\Map\Star.cs" />
-    <Compile Include="Model\PlayerAction\Command.cs" />
-    <Compile Include="Model\PlayerAction\CommandResult.cs" />
-    <Compile Include="Model\Player\Ship.cs" />
+    <Compile Include="Model\CommandResult.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

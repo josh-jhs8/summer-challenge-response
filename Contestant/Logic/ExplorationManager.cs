@@ -1,5 +1,5 @@
-﻿using Challenger.Model.Map;
-using Challenger.Model.Player;
+﻿using ChallengeModel.Map;
+using ChallengeModel.Player;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
