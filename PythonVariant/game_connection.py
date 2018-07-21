@@ -1,6 +1,7 @@
 import socket
 import threading
 import json
+import game_constants as const
 
 class GameSocketManager:
 	def __init__(self, sock=None):
@@ -25,4 +26,4 @@ class GameSocketManager:
 		return json.loads(msg)
 
 def make_command(cmd_type, action, subject = "", arguments = []):
-	return { "Type": cmd_type, "Subject": subject, "Action": action, "Arguments": arguments}
+	return { const.TYPE: cmd_type, const.SUBJECT: subject, const.ACTION: action, const.ARGUMENTS: arguments}

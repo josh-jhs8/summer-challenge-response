@@ -1,5 +1,6 @@
 import copy as c
 import threading as t
+import game_constants as const
 
 class GameState:
 	def __init__(self, ships = [], systems = []):
@@ -24,12 +25,12 @@ class GameState:
 		self.lock.acquire(True)
 		update = False
 		for sys in self.systems:
-			if sys["Name"] == new_system["Name"]:
+			if sys[const.NAME] == new_system[const.NAME]:
 				update = True
-				sys["Stars"] = new_system["Stars"]
-				sys["Planets"] = new_system["Planets"]
-				sys["Hyperlanes"] = new_system["Hyperlanes"]
-				sys["Location"] = new_system["Location"]
+				sys[const.STARS] = new_system[const.STARS]
+				sys[const.PLANETS] = new_system[const.PLANETS]
+				sys[const.HYPERLANES] = new_system[const.HYPERLANES]
+				sys[const.LOCATION] = new_system[const.LOCATION]
 		if not update:
 			self.systems.append(new_system)
 		self.lock.release()
@@ -39,10 +40,10 @@ class GameState:
 		self.lock.acquire(True)
 		update = False
 		for s in self.ships:
-			if s["Name"] == new_ship["Name"]:
+			if s[const.NAME] == new_ship[const.NAME]:
 				update = True
-				s["Location"] = new_ship["Location"]
-				s["Status"] = new_ship["Status"]
+				s[const.LOCATION] = new_ship[const.LOCATION]
+				s[const.STATUS] = new_ship[const.STATUS]
 		if not update:
 			self.ships.append(new_ship)
 		self.lock.release()

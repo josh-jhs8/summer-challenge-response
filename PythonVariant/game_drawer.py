@@ -1,6 +1,7 @@
 import pygame as pg
 import threading as t
 import exploration_manager as em
+import game_constants as const
 
 '''
 We're going to assume all coordinates are between -10 and + 10
@@ -41,21 +42,21 @@ class GameDrawer(t.Thread):
 
 	def draw_ships(self, screen, ships, systems):
 		for ship in ships:
-			sys = em.get_system_by_name(ship["Location"], systems)
+			sys = em.get_system_by_name(ship[const.LOCATION], systems)
 			if sys:
-				pos = translate_position(sys["Location"])
+				pos = translate_position(sys[const.LOCATION])
 				pg.draw.circle(screen, red, pos, int(3))
 
 	def draw_systems(self, screen, systems):
 		for system in systems:
-			pos = translate_position(system["Location"])
-			for lane in system["Hyperlanes"]:
+			pos = translate_position(system[const.LOCATION])
+			for lane in system[const.HYPERLANES]:
 				new_sys = em.get_system_by_name(lane, systems)
 				if new_sys:
-					new_pos = translate_position(new_sys["Location"])
+					new_pos = translate_position(new_sys[const.LOCATION])
 					pg.draw.line(screen, white, pos, new_pos)
 			pg.draw.circle(screen, green, pos, int(5))
 
 
 def translate_position(loc):
-	return (int(round((loc["X"]+11)*unit_dx)), int(round((loc["Y"]-11)*unit_dy)*-1))
+	return (int(round((loc[const.X]+11)*unit_dx)), int(round((loc[const.Y]-11)*unit_dy)*-1))
