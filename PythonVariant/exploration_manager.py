@@ -1,5 +1,6 @@
 import ship_commands as sc
 import threading as t
+import time
 
 class ExplorationManager(t.Thread):
 	def __init__(self, conn, state):
@@ -14,9 +15,15 @@ class ExplorationManager(t.Thread):
 		while True:
 			systems = self.state.get_systems()
 			ships = self.state.get_ships()
+			#Do we actually have a state yet?
+			if len(ships) < 1:
+				time.sleep(0.1)
+				continue
 			#Have we observerd all the systems we're in
 			observed = get_system_list(systems)
 			for ship in ships:
+				if ship["Status"] != "Awaiting Command":
+					continue
 				if ship["Location"] not in observed:
 					s = sc.observe(self.conn, ship)
 					systems.append(s)
@@ -29,6 +36,8 @@ class ExplorationManager(t.Thread):
 				return
 			#We haven't gone everywhere yet
 			for ship in ships:
+				if ship["Status"] != "Awaiting Command":
+					continue
 				curr_system = get_system_by_name(ship["Location"], systems)
 				#Go unexplored or go back
 				dest = None

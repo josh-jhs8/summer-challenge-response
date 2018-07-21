@@ -5,7 +5,8 @@ def move(conn, ship, dest):
 	data = conn.run_command(cmd)
 	if data["Success"]:
 		ship["Location"] = data["ResultObject"]["Location"]
-		print("Moved " + ship["Name"] + " to " + ship["Location"])
+		ship["Status"] = data["ResultObject"]["Status"]
+		print("Moving " + ship["Name"] + " to " + ship["Location"])
 	else:
 		raise RuntimeError("Move command failed")
 

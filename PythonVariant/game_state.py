@@ -42,6 +42,7 @@ class GameState:
 			if s["Name"] == new_ship["Name"]:
 				update = True
 				s["Location"] = new_ship["Location"]
+				s["Status"] = new_ship["Status"]
 		if not update:
 			self.ships.append(new_ship)
 		self.lock.release()

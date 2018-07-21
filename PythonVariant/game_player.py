@@ -1,5 +1,6 @@
 import game_connection as gc
 import game_state as gs
+import game_state_manager as gsm
 import ship_commands as sc
 import exploration_manager as em
 import game_drawer as gd
@@ -13,8 +14,10 @@ class GamePlayer:
 
 	def initialise(self):
 		print("Establishing initial position...")
-		ships = sc.list(self.conn)
-		self.state = gs.GameState(ships)
+		self.state = gs.GameState()
+		state_man = gsm.StateManager(self.conn, self.state)
+		state_man.start()
+		return state_man
 
 	def explore(self):
 		ex_man = em.ExplorationManager(self.conn, self.state)
