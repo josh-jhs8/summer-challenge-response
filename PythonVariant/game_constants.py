@@ -1,3 +1,7 @@
+"""
+Constants for use in the game
+"""
+
 SHIPS = "Ships"
 SYSTEMS = "SolarSystems"
 LOCATION = "Location"

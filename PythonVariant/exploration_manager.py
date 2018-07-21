@@ -1,15 +1,25 @@
-import ship_commands as sc
+"""
+Manage exploration aspect of challenge
+"""
+
 import threading as t
 import time
+import ship_commands as sc
 import game_constants as const
 
 class ExplorationManager(t.Thread):
+	"""
+	Class to manage exploration thread
+	"""
 	def __init__(self, conn, state):
 		self.conn = conn
 		self.state = state
 		super().__init__()
 
 	def run(self):
+		"""
+		Begin exploring
+		"""
 		print("Beginning to explore...")
 		ship_path = {}
 
@@ -17,7 +27,7 @@ class ExplorationManager(t.Thread):
 			systems = self.state.get_systems()
 			ships = self.state.get_ships()
 			#Do we actually have a state yet?
-			if len(ships) < 1:
+			if not ships:
 				time.sleep(0.1)
 				continue
 			#Have we observerd all the systems we're in
@@ -26,10 +36,10 @@ class ExplorationManager(t.Thread):
 				if ship[const.STATUS] != const.AWAITING:
 					continue
 				if ship[const.LOCATION] not in observed:
-					s = sc.observe(self.conn, ship)
-					systems.append(s)
-					observed.append(s[const.NAME])
-					self.state.add_update_system(s)
+					sys = sc.observe(self.conn, ship)
+					systems.append(sys)
+					observed.append(sys[const.NAME])
+					self.state.add_update_system(sys)
 			#Done yet?
 			accessable = get_accessable_systems(ships, systems)
 			if len(systems) == len(accessable):
@@ -46,8 +56,8 @@ class ExplorationManager(t.Thread):
 					if lane not in observed:
 						dest = lane
 						break
-				if dest == None:
-					if ship[const.NAME] in ship_path and len(ship_path[ship[const.NAME]]) > 0:
+				if dest is None:
+					if ship[const.NAME] in ship_path and ship_path[ship[const.NAME]]:
 						dest = ship_path[ship[const.NAME]].pop()
 					else:
 						continue
@@ -60,7 +70,10 @@ class ExplorationManager(t.Thread):
 
 
 
-def get_accessable_systems(ships = [], systems = []):
+def get_accessable_systems(ships, systems):
+	"""
+	Determine which systems are currently accessable
+	"""
 	accessable = []
 	for ship in ships:
 		if ship[const.LOCATION] not in accessable:
@@ -74,13 +87,19 @@ def get_accessable_systems(ships = [], systems = []):
 	return accessable
 
 def get_system_list(systems):
-	l = []
+	"""
+	Get the list of system names
+	"""
+	sys_list = []
 	for system in systems:
-		if system[const.NAME] not in l:
-			l.append(system[const.NAME])
-	return l
+		if system[const.NAME] not in sys_list:
+			sys_list.append(system[const.NAME])
+	return sys_list
 
 def get_system_by_name(name, systems):
+	"""
+	Find the system in a list based on it's name
+	"""
 	for system in systems:
 		if name == system[const.NAME]:
 			return system

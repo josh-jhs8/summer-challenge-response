@@ -1,26 +1,44 @@
+"""
+Create an object to represent the state of the game
+"""
+
 import copy as c
 import threading as t
 import game_constants as const
 
 class GameState:
-	def __init__(self, ships = [], systems = []):
-		self.ships = c.deepcopy(ships)
-		self.systems = c.deepcopy(systems)
+	"""
+	Class to represent the current state of the game.
+	Manages concurreny as well.
+	"""
+	def __init__(self):
+		self.ships = []
+		self.systems = []
 		self.lock = t.Lock()
 
 	def get_systems(self):
+		"""
+		Gets the systems based on the current state
+		"""
 		self.lock.acquire(True)
 		new_systems = c.deepcopy(self.systems)
 		self.lock.release()
 		return new_systems
 
 	def get_ships(self):
+		"""
+		Gets the players ships based on the current state
+		"""
 		self.lock.acquire(True)
 		new_ships = c.deepcopy(self.ships)
 		self.lock.release()
 		return new_ships
 
 	def add_update_system(self, system):
+		"""
+		Adds a system to the state if not present,
+		updates the system if already present
+		"""
 		new_system = c.deepcopy(system)
 		self.lock.acquire(True)
 		update = False
@@ -36,15 +54,18 @@ class GameState:
 		self.lock.release()
 
 	def add_update_ship(self, ship):
+		"""
+		Adds a ship to the state if not present,
+		updates the ship if already present
+		"""
 		new_ship = c.deepcopy(ship)
 		self.lock.acquire(True)
 		update = False
-		for s in self.ships:
-			if s[const.NAME] == new_ship[const.NAME]:
+		for s_ship in self.ships:
+			if s_ship[const.NAME] == new_ship[const.NAME]:
 				update = True
-				s[const.LOCATION] = new_ship[const.LOCATION]
-				s[const.STATUS] = new_ship[const.STATUS]
+				s_ship[const.LOCATION] = new_ship[const.LOCATION]
+				s_ship[const.STATUS] = new_ship[const.STATUS]
 		if not update:
 			self.ships.append(new_ship)
 		self.lock.release()
-

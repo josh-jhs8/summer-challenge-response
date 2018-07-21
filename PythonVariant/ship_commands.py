@@ -1,42 +1,56 @@
+"""
+Execute specifc commands for a ship
+"""
+
 import game_connection as gc
+import game_constants as const
 
 def move(conn, ship, dest):
-	cmd = gc.make_command("Ship", "Move", ship["Name"], [dest])
+	"""
+	Order the ship to move to a destination
+	"""
+	cmd = gc.make_command(const.SHIP, const.SHIP, ship[const.NAME], [dest])
 	data = conn.run_command(cmd)
-	if data["Success"]:
-		ship["Location"] = data["ResultObject"]["Location"]
-		ship["Status"] = data["ResultObject"]["Status"]
-		print("Moving " + ship["Name"] + " to " + ship["Location"])
+	if data[const.SUCCESS]:
+		ship[const.LOCATION] = data[const.RESULT_OBJECT][const.LOCATION]
+		ship[const.STATUS] = data[const.RESULT_OBJECT][const.STATUS]
+		print("Moving " + ship[const.NAME] + " to " + ship[const.LOCATION])
 	else:
 		raise RuntimeError("Move command failed")
 
 def observe(conn, ship):
-	cmd = gc.make_command("Ship", "Observe", ship["Name"])
+	"""
+	Observe the system that the ship is currently in
+	"""
+	cmd = gc.make_command(const.SHIP, const.OBSERVE, ship[const.NAME])
 	data = conn.run_command(cmd)
-	if data["Success"]:
-		system = data["ResultObject"]
-		print("Observed " + system["Name"])
+	if data[const.SUCCESS]:
+		system = data[const.RESULT_OBJECT]
+		print("Observed " + system[const.NAME])
 		print("Stars:")
-		for star in system["Stars"]:
-			print("\t" + star["Name"])
+		for star in system[const.STARS]:
+			print("\t" + star[const.NAME])
 		print("Planets:")
-		for planet in system["Planets"]:
-			print("\t" + planet["Name"])
+		for planet in system[const.PLANETS]:
+			print("\t" + planet[const.NAME])
 		print("Hyperlanes:")
-		for lane in system["Hyperlanes"]:
+		for lane in system[const.HYPERLANES]:
 			print("\t" + lane)
-		print("Location: (" + str(system["Location"]["X"]) + ", " + str(system["Location"]["Y"]) + ")")
+		x_str = str(system[const.LOCATION][const.X])
+		y_str = str(system[const.LOCATION][const.Y])
+		print("Location: (" + x_str +  ", " + y_str + ")")
 		return system
-	else:
-		raise RuntimeError("Observe command failed")
+	raise RuntimeError("Observe command failed")
 
-def list(conn):
-	cmd = gc.make_command("Ship", "List")
+def ship_list(conn):
+	"""
+	List all current ships
+	"""
+	cmd = gc.make_command(const.SHIP, const.LIST)
 	data = conn.run_command(cmd)
-	if data["Success"]:
-		ships = data["ResultObject"]
+	if data[const.SUCCESS]:
+		ships = data[const.RESULT_OBJECT]
 		for ship in ships:
-			print(ship["Name"] + " starts in " + ship["Location"])
+			print(ship[const.NAME] + " is currently in " + ship[const.LOCATION])
 		return ships
-	else:
-		raise RuntimeError("List command failed")
+	raise RuntimeError("List command failed")

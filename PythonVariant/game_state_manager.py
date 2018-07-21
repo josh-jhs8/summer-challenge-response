@@ -1,9 +1,15 @@
+"""
+Manage the state of the game
+"""
 import threading as th
-import game_connection as gc
 import time as t
+import game_connection as gc
 import game_constants as const
 
 class StateManager(th.Thread):
+	"""
+	Thread class for continually polling the game state
+	"""
 	def __init__(self, conn, state):
 		self.conn = conn
 		self.state = state
@@ -11,6 +17,9 @@ class StateManager(th.Thread):
 		super().__init__()
 
 	def run(self):
+		"""
+		Run the polling thread
+		"""
 		cmd = gc.make_command(const.STATE, const.POLL)
 		self.active = True
 		while self.active:
@@ -23,6 +32,9 @@ class StateManager(th.Thread):
 			t.sleep(0.1)
 
 	def update_state(self, state):
+		"""
+		Update the state of the game based on the returned state
+		"""
 		for ship in state[const.SHIPS]:
 			self.state.add_update_ship(ship)
 		for system in state[const.SYSTEMS]:
