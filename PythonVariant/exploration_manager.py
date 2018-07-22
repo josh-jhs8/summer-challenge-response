@@ -30,44 +30,63 @@ class ExplorationManager(t.Thread):
 			if not ships:
 				time.sleep(0.1)
 				continue
-			#Have we observerd all the systems we're in
-			observed = get_system_list(systems)
-			for ship in ships:
-				if ship[const.STATUS] != const.AWAITING:
-					continue
-				if ship[const.LOCATION] not in observed:
-					sys = sc.observe(self.conn, ship)
-					systems.append(sys)
-					observed.append(sys[const.NAME])
-					self.state.add_update_system(sys)
+			self.do_observations(ships, systems)
 			#Done yet?
 			accessable = get_accessable_systems(ships, systems)
 			if len(systems) == len(accessable):
 				print("Finished Exploring!")
 				return
 			#We haven't gone everywhere yet
-			for ship in ships:
-				if ship[const.STATUS] != const.AWAITING:
-					continue
-				curr_system = get_system_by_name(ship[const.LOCATION], systems)
-				#Go unexplored or go back
-				dest = None
-				for lane in curr_system[const.HYPERLANES]:
-					if lane not in observed:
-						dest = lane
-						break
-				if dest is None:
-					if ship[const.NAME] in ship_path and ship_path[ship[const.NAME]]:
-						dest = ship_path[ship[const.NAME]].pop()
-					else:
-						continue
-				else:
-					if ship[const.NAME] not in ship_path:
-						ship_path[ship[const.NAME]] = []
-					ship_path[ship[const.NAME]].append(curr_system[const.NAME])
+			self.move_ships(ships, ship_path, systems)
+
+
+	def do_observations(self, ships, systems):
+		"""
+		Observe any systems that ships are in if they
+		have not been observed already
+		"""
+		observed = get_system_list(systems)
+		for ship in ships:
+			if ship[const.STATUS] != const.AWAITING:
+				continue
+			if ship[const.LOCATION] not in observed:
+				sys = sc.observe(self.conn, ship)
+				systems.append(sys)
+				observed.append(sys[const.NAME])
+				self.state.add_update_system(sys)
+
+	def move_ships(self, ships, ship_path, systems):
+		"""
+		Move the ships around to explore
+		"""
+		for ship in ships:
+			if ship[const.STATUS] != const.AWAITING:
+				continue
+			observed = get_system_list(systems)
+			curr_system = get_system_by_name(ship[const.LOCATION], systems)
+			#Go unexplored or go back
+			if not ship[const.NAME] in ship_path:
+				ship_path[ship[const.NAME]] = []
+			dest = get_destination(ship_path[ship[const.NAME]], curr_system, observed)
+			if dest:
 				sc.move(self.conn, ship, dest)
 				self.state.add_update_ship(ship)
 
+def get_destination(ship_path, system, observed):
+	"""
+	Get the optimal destination for the ship based on the provided data
+	"""
+	dest = None
+	for lane in system[const.HYPERLANES]:
+		if lane not in observed:
+			dest = lane
+	if dest is None:
+		#if ship[const.NAME] in ship_path and ship_path[ship[const.NAME]]:
+		if ship_path:
+			dest = ship_path.pop()
+	else:
+		ship_path.append(system[const.NAME])
+	return dest
 
 
 def get_accessable_systems(ships, systems):
