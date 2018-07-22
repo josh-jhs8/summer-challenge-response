@@ -18,9 +18,12 @@ namespace Contestant.Logic
         {
             var state = new ChallengeState();
             var stateManager = new StateManager(_connection, state);
-            stateManager.PollState();
+            var explorationManager = new ExplorationManager(state, _connection);
 
-            new ExplorationManager(state, _connection).Explore().Wait();
+            _connection.PollForStart().Wait();
+
+            stateManager.PollState();
+            explorationManager.Explore().Wait();
             stateManager.Finish();
 
             foreach (var system in state.SolarSystems.Select(s => s.Value))

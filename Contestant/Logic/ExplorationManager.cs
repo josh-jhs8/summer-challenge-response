@@ -24,16 +24,17 @@ namespace Contestant.Logic
             {
                 var accessableSystems = new List<string>();
                 var shipPath = new Dictionary<string, Stack<string>>();
+                var ships = _state.Empire.Ships;
 
                 while (true)
                 {
-                    if (_state.Ships.Count < 1)
+                    if (ships.Count < 1)
                     {
                         Thread.Sleep(100);
                         continue;
                     }
 
-                    foreach (var ship in _state.Ships.Select(s => s.Value).Where(s => s.Status == "Awaiting Command"))
+                    foreach (var ship in ships.Select(s => s.Value).Where(s => s.Status == "Awaiting Command"))
                     {
                         //First check we've recorded all the systems we're currently in
                         if (!_state.SolarSystems.ContainsKey(ship.Location))
@@ -49,7 +50,7 @@ namespace Contestant.Logic
                     //This means we're done
                     if (accessableSystems.Count == _state.SolarSystems.Count) return;
 
-                    foreach (var ship in _state.Ships.Select(s => s.Value).Where(s => s.Status == "Awaiting Command"))
+                    foreach (var ship in ships.Select(s => s.Value).Where(s => s.Status == "Awaiting Command"))
                     {
                         if (!_state.SolarSystems.ContainsKey(ship.Location)) continue;
                         var currentSystem = _state.SolarSystems[ship.Location];
@@ -69,7 +70,7 @@ namespace Contestant.Logic
                         }
 
                         _manager.Move(ship, destination);
-                        _state.Ships.AddOrUpdate(ship.Name, ship, (n, s) => ship);
+                        ships.AddOrUpdate(ship.Name, ship, (n, s) => ship);
                     }
                 }
             });

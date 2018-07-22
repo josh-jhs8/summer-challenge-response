@@ -32,8 +32,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ChallengeModel, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\ChallengeModel.1.1.0\lib\net452\ChallengeModel.dll</HintPath>
+    <Reference Include="ChallengeModel, Version=1.2.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ChallengeModel.1.2.1\lib\net452\ChallengeModel.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -53,6 +53,7 @@
     <Compile Include="Logic\ExplorationManager.cs" />
     <Compile Include="Logic\ShipManager.cs" />
     <Compile Include="Logic\StateManager.cs" />
+    <Compile Include="Model\ChallengeEmpire.cs" />
     <Compile Include="Model\ChallengeState.cs" />
     <Compile Include="Model\CommandResult.cs" />
     <Compile Include="Program.cs" />

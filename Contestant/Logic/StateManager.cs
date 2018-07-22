@@ -5,6 +5,7 @@ using ChallengeModel.PlayerAction;
 using Contestant.Model;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -40,7 +41,7 @@ namespace Contestant.Logic
                     var result = _connection.SendCommand<State>(cmd);
                     if (!result.Success) throw new Exception("Something went wrong with the poll state command.");
                     var newState = result.ResultObject;
-                    UpdateShips(newState.Ships);
+                    UpdateEmpire(newState.Players.First());
                     UpdateSystems(newState.SolarSystems);
                     Thread.Sleep(100);
                     lock(_activeLock) { running = _active; }
@@ -53,11 +54,12 @@ namespace Contestant.Logic
             lock(_activeLock) { _active = false; }
         }
 
-        private void UpdateShips(List<Ship> ships)
+        private void UpdateEmpire(Empire empire)
         {
-            foreach (var ship in ships)
+            if (string.IsNullOrEmpty(_state.Empire.Name)) _state.Empire.Name = empire.Name;
+            if (_state.Empire.Name == empire.Name)
             {
-                _state.Ships.AddOrUpdate(ship.Name, ship, (n, s) => ship);
+                _state.Empire.UpdateShips(empire.Ships);
             }
         }
 
