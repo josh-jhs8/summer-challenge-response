@@ -12,7 +12,7 @@ class GameState:
 	Manages concurreny as well.
 	"""
 	def __init__(self):
-		self.ships = []
+		self.player = {}
 		self.systems = []
 		self.lock = t.Lock()
 
@@ -30,7 +30,9 @@ class GameState:
 		Gets the players ships based on the current state
 		"""
 		self.lock.acquire(True)
-		new_ships = c.deepcopy(self.ships)
+		new_ships = []
+		if self.player:
+			new_ships = c.deepcopy(self.player[const.SHIPS])
 		self.lock.release()
 		return new_ships
 
@@ -58,14 +60,29 @@ class GameState:
 		Adds a ship to the state if not present,
 		updates the ship if already present
 		"""
+		if not self.player:
+			raise RuntimeError("Don't even have player yet!")
 		new_ship = c.deepcopy(ship)
 		self.lock.acquire(True)
 		update = False
-		for s_ship in self.ships:
+		for s_ship in self.player[const.SHIPS]:
 			if s_ship[const.NAME] == new_ship[const.NAME]:
 				update = True
 				s_ship[const.LOCATION] = new_ship[const.LOCATION]
 				s_ship[const.STATUS] = new_ship[const.STATUS]
 		if not update:
-			self.ships.append(new_ship)
+			self.player[const.SHIPS].append(new_ship)
 		self.lock.release()
+
+	def add_update_player(self, player):
+		"""
+		Adds a player to state if not present,
+		updates the player if already present
+		"""
+		if not self.player:
+			self.lock.acquire(True)
+			self.player[const.NAME] = player[const.NAME]
+			self.player[const.SHIPS] = []
+			self.lock.release()
+		for ship in player[const.SHIPS]:
+			self.add_update_ship(ship)

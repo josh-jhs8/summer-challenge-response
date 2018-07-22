@@ -4,6 +4,7 @@ Manage the connection to the challenge server
 
 import socket
 import threading
+import time
 import json
 import game_constants as const
 
@@ -20,9 +21,18 @@ class GameSocketManager:
 
 	def connect(self, host, port):
 		"""
-		Connect to the challenge server
+		Connect to the challenge server and wait for the challenge to start
 		"""
+		self.lock.acquire(True)
 		self.sock.connect((host, port))
+		while True:
+			response = self.sock.recv(10)
+			msg = response.decode("utf-8")
+			if msg == const.BEGIN:
+				print("Let the challenge begin...")
+				break
+			time.sleep(0.1)
+		self.lock.release()
 
 	def run_command(self, cmd):
 		"""

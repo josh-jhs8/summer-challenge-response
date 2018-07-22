@@ -10,8 +10,11 @@ def play_game(host, port):
 	Play game on specific remote endpoint
 	"""
 	player = gp.GamePlayer()
+	print("Created game player")
 	player.connect(host, port)
+	print("Connected")
 	state_man = player.initialise()
+	print("Initialised")
 	tasks = []
 	tasks.append(player.explore())
 	tasks.append(player.draw())

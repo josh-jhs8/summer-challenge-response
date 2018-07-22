@@ -35,7 +35,8 @@ class StateManager(th.Thread):
 		"""
 		Update the state of the game based on the returned state
 		"""
-		for ship in state[const.SHIPS]:
-			self.state.add_update_ship(ship)
+		if not state[const.PLAYERS]:
+			raise RuntimeError("No players in state")
+		self.state.add_update_player(state[const.PLAYERS][0])
 		for system in state[const.SYSTEMS]:
 			self.state.add_update_system(system)

@@ -9,13 +9,14 @@ def move(conn, ship, dest):
 	"""
 	Order the ship to move to a destination
 	"""
-	cmd = gc.make_command(const.SHIP, const.SHIP, ship[const.NAME], [dest])
+	cmd = gc.make_command(const.SHIP, const.MOVE, ship[const.NAME], [dest])
 	data = conn.run_command(cmd)
 	if data[const.SUCCESS]:
 		ship[const.LOCATION] = data[const.RESULT_OBJECT][const.LOCATION]
 		ship[const.STATUS] = data[const.RESULT_OBJECT][const.STATUS]
 		print("Moving " + ship[const.NAME] + " to " + ship[const.LOCATION])
 	else:
+		print(data[const.MESSAGE])
 		raise RuntimeError("Move command failed")
 
 def observe(conn, ship):
@@ -40,6 +41,7 @@ def observe(conn, ship):
 		y_str = str(system[const.LOCATION][const.Y])
 		print("Location: (" + x_str +  ", " + y_str + ")")
 		return system
+	print(data[const.MESSAGE])
 	raise RuntimeError("Observe command failed")
 
 def ship_list(conn):
@@ -53,4 +55,5 @@ def ship_list(conn):
 		for ship in ships:
 			print(ship[const.NAME] + " is currently in " + ship[const.LOCATION])
 		return ships
+	print(data[const.MESSAGE])
 	raise RuntimeError("List command failed")
