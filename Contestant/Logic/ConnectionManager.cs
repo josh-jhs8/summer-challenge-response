@@ -20,7 +20,6 @@ namespace Contestant.Logic
         public CommandResult<TReturnType> SendCommand<TReturnType>(Command command)
         {
             var cmdJson = JsonConvert.SerializeObject(command);
-            Console.WriteLine($"Sending: {cmdJson}");
             var cmd = Encoding.UTF8.GetBytes(cmdJson);
 
             byte[] data = new byte[1000000];
@@ -35,7 +34,6 @@ namespace Contestant.Logic
             Array.Copy(data, resultData, dataSize);
 
             var resultJson = Encoding.UTF8.GetString(resultData);
-            Console.WriteLine($"Received: {resultJson}");
             return JsonConvert.DeserializeObject<CommandResult<TReturnType>>(resultJson);
         }
 

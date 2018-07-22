@@ -1,8 +1,6 @@
-﻿using ChallengeModel.Map;
-using ChallengeModel.Player;
-using ChallengeModel.PlayerAction;
+﻿using Contestant.Model;
 using System;
-using System.Collections.Generic;
+using System.Linq;
 using System.Net.Sockets;
 
 namespace Contestant.Logic
@@ -10,8 +8,6 @@ namespace Contestant.Logic
     public class ContestantManager
     {
         private ConnectionManager _connection;
-        private List<Ship> _ships = new List<Ship>();
-        private List<SolarSystem> _systems = new List<SolarSystem>();
 
         public ContestantManager(Socket connection)
         {
@@ -20,38 +16,19 @@ namespace Contestant.Logic
 
         public void PlayGame()
         {
-            GetListOfShips();
+            var state = new ChallengeState();
+            var stateManager = new StateManager(_connection, state);
+            stateManager.PollState();
 
-            new ExplorationManager(_ships, _systems, _connection).Explore().Wait();
+            new ExplorationManager(state, _connection).Explore().Wait();
+            stateManager.Finish();
 
-            foreach (var system in _systems)
+            foreach (var system in state.SolarSystems.Select(s => s.Value))
             {
                 Console.WriteLine(system.Name);
             }
 
             _connection.Close();
-        }
-
-        private void GetListOfShips()
-        {
-            var command = new Command
-            {
-                Type = "Ship",
-                Subject = "",
-                Action = "List",
-                Arguments = new List<string>()
-            };
-            var result = _connection.SendCommand<List<Ship>>(command);
-            if (result.Success)
-            {
-                _ships = result.ResultObject;
-                Console.WriteLine("Got list of ships:");
-                foreach (var ship in _ships) Console.WriteLine($"\t{ship.Name}");
-            }
-            else
-            {
-                Console.WriteLine($"Failed to get ships: {result.Message}");
-            }
         }
     }
 }

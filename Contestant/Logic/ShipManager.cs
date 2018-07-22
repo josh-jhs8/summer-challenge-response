@@ -1,6 +1,7 @@
 ﻿using ChallengeModel.Map;
 using ChallengeModel.Player;
 using ChallengeModel.PlayerAction;
+using System;
 using System.Collections.Generic;
 
 namespace Contestant.Logic
@@ -24,6 +25,7 @@ namespace Contestant.Logic
                 Arguments = new List<string>()
             };
             var result = _connection.SendCommand<SolarSystem>(command);
+            Console.WriteLine($"Observed: {result.ResultObject.Name}");
             if (result.Success) return result.ResultObject;
             else return null;
         }
@@ -38,7 +40,12 @@ namespace Contestant.Logic
                 Arguments = new List<string>() { destination }
             };
             var result = _connection.SendCommand<Ship>(command);
-            if (result.Success) ship.Location = result.ResultObject.Location;
+            Console.WriteLine($"{result.ResultObject.Name}: {result.ResultObject.Status}");
+            if (result.Success)
+            {
+                ship.Location = result.ResultObject.Location;
+                ship.Status = result.ResultObject.Status;
+            }
         }
     }
 }
