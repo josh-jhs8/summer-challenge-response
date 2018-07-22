@@ -8,42 +8,44 @@ import game_state_manager as gsm
 import exploration_manager as em
 import game_drawer as gd
 
+
 class GamePlayer:
-	"""
-	Class represent game player and their available action threads
-	"""
-	def __init__(self):
-		self.conn = gc.GameSocketManager()
-		self.state = None
+    """
+    Class represent game player and their available action threads
+    """
 
-	def connect(self, host, port):
-		"""
-		Connect to challenge server
-		"""
-		self.conn.connect(host, port)
+    def __init__(self):
+        self.conn = gc.GameSocketManager()
+        self.state = None
 
-	def initialise(self):
-		"""
-		Initialise the state of the challenge
-		"""
-		print("Establishing initial position...")
-		self.state = gs.GameState()
-		state_man = gsm.StateManager(self.conn, self.state)
-		state_man.start()
-		return state_man
+    def connect(self, host, port):
+        """
+        Connect to challenge server
+        """
+        self.conn.connect(host, port)
 
-	def explore(self):
-		"""
-		Explore the challenge provided
-		"""
-		ex_man = em.ExplorationManager(self.conn, self.state)
-		ex_man.start()
-		return ex_man
+    def initialise(self):
+        """
+        Initialise the state of the challenge
+        """
+        print("Establishing initial position...")
+        self.state = gs.GameState()
+        state_man = gsm.StateManager(self.conn, self.state)
+        state_man.start()
+        return state_man
 
-	def draw(self):
-		"""
-		Draw the state of the challenge
-		"""
-		drawer = gd.GameDrawer(self.state)
-		drawer.start()
-		return drawer
+    def explore(self):
+        """
+        Explore the challenge provided
+        """
+        ex_man = em.ExplorationManager(self.conn, self.state)
+        ex_man.start()
+        return ex_man
+
+    def draw(self):
+        """
+        Draw the state of the challenge
+        """
+        drawer = gd.GameDrawer(self.state)
+        drawer.start()
+        return drawer
