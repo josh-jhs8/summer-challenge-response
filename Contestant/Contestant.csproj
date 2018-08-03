@@ -50,6 +50,7 @@
   <ItemGroup>
     <Compile Include="Logic\ConnectionManager.cs" />
     <Compile Include="Logic\ContestantManager.cs" />
+    <Compile Include="Logic\ExplorationComparer.cs" />
     <Compile Include="Logic\ExplorationManager.cs" />
     <Compile Include="Logic\ShipManager.cs" />
     <Compile Include="Logic\StateManager.cs" />

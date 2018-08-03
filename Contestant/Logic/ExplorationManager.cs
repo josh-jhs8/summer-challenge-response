@@ -24,6 +24,8 @@ namespace Contestant.Logic
             {
                 var accessableSystems = new List<string>();
                 var shipPath = new Dictionary<string, Stack<string>>();
+                var shipVisited = new Dictionary<string, List<string>>();
+                var plannedDestinations = new Dictionary<string, string>();
                 var ships = _state.Empire.Ships;
 
                 while (true)
@@ -36,6 +38,11 @@ namespace Contestant.Logic
 
                     foreach (var ship in ships.Select(s => s.Value).Where(s => s.Status == "Awaiting Command"))
                     {
+                        if (plannedDestinations.ContainsKey(ship.Name) && plannedDestinations[ship.Name] == ship.Location)
+                            plannedDestinations.Remove(ship.Name);
+                        if (!shipVisited.ContainsKey(ship.Name)) shipVisited.Add(ship.Name, new List<string>());
+                        if (!shipVisited[ship.Name].Contains(ship.Location)) shipVisited[ship.Name].Add(ship.Location);
+
                         //First check we've recorded all the systems we're currently in
                         if (!_state.SolarSystems.ContainsKey(ship.Location))
                         {
@@ -52,9 +59,15 @@ namespace Contestant.Logic
 
                     foreach (var ship in ships.Select(s => s.Value).Where(s => s.Status == "Awaiting Command"))
                     {
+                        if (plannedDestinations.ContainsKey(ship.Name) && plannedDestinations[ship.Name] == ship.Location)
+                            plannedDestinations.Remove(ship.Name);
+                        if (!shipVisited.ContainsKey(ship.Name)) shipVisited.Add(ship.Name, new List<string>());
+                        if (!shipVisited[ship.Name].Contains(ship.Location)) shipVisited[ship.Name].Add(ship.Location);
+
                         if (!_state.SolarSystems.ContainsKey(ship.Location)) continue;
                         var currentSystem = _state.SolarSystems[ship.Location];
-                        var destination = currentSystem.Hyperlanes.FirstOrDefault(h => !_state.SolarSystems.ContainsKey(h));
+                        currentSystem.Hyperlanes.Sort(new ExplorationComparer(shipVisited, plannedDestinations));
+                        var destination = currentSystem.Hyperlanes.FirstOrDefault(h => !shipVisited[ship.Name].Contains(h));
                         //If you've looked everywhere you can go from here, then go back
                         if (destination == null)
                         {
@@ -69,6 +82,7 @@ namespace Contestant.Logic
                             shipPath[ship.Name].Push(currentSystem.Name);
                         }
 
+                        plannedDestinations.Add(ship.Name, destination);
                         _manager.Move(ship, destination);
                         ships.AddOrUpdate(ship.Name, ship, (n, s) => ship);
                     }
