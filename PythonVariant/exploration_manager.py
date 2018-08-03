@@ -23,7 +23,9 @@ class ExplorationManager(t.Thread):
         Begin exploring
         """
         print("Beginning to explore...")
-        ship_path = {}
+        ship_paths = {}
+        planned_dests = {}
+        ships_visited = {}
 
         while True:
             systems = self.state.get_systems()
@@ -32,6 +34,7 @@ class ExplorationManager(t.Thread):
             if not ships:
                 time.sleep(0.1)
                 continue
+            remove_arrived_destinations(ships, planned_dests)
             self.do_observations(ships, systems)
             # Done yet?
             accessable = get_accessable_systems(ships, systems)
@@ -39,7 +42,8 @@ class ExplorationManager(t.Thread):
                 print("Finished Exploring!")
                 return
             # We haven't gone everywhere yet
-            self.move_ships(ships, ship_path, systems)
+            self.move_ships(ships, ship_paths, systems,
+                            ships_visited, planned_dests)
 
     def do_observations(self, ships, systems):
         """
@@ -56,35 +60,51 @@ class ExplorationManager(t.Thread):
                 observed.append(sys[const.NAME])
                 self.state.add_update_system(sys)
 
-    def move_ships(self, ships, ship_path, systems):
+    def move_ships(
+            self, ships, ship_paths, systems, ships_visited, planned_dests):
         """
         Move the ships around to explore
         """
         for ship in ships:
             if ship[const.STATUS] != const.AWAITING:
                 continue
-            observed = get_system_list(systems)
             curr_system = get_system_by_name(ship[const.LOCATION], systems)
             # Go unexplored or go back
-            if not ship[const.NAME] in ship_path:
-                ship_path[ship[const.NAME]] = []
+            if not ship[const.NAME] in ship_paths:
+                ship_paths[ship[const.NAME]] = []
+            add_ships_visited(ships, ships_visited)
             dest = get_destination(
-                ship_path[ship[const.NAME]], curr_system, observed)
+                ship[const.NAME], curr_system, ship_paths[ship[const.NAME]],
+                ships_visited, planned_dests)
             if dest:
+                planned_dests[ship[const.NAME]] = dest
                 sc.move(self.conn, ship, dest)
                 self.state.add_update_ship(ship)
 
 
-def get_destination(ship_path, system, observed):
+def get_destination(
+        ship_name, system, ship_path, ships_visited, planned_dests):
     """
     Get the optimal destination for the ship based on the provided data
     """
     dest = None
+    dest_rating = {}
+    visited = [item for sublist in ships_visited.values() for item in sublist]
     for lane in system[const.HYPERLANES]:
-        if lane not in observed:
-            dest = lane
+        if lane not in ships_visited[ship_name]:
+            rating = 1
+            if lane not in visited:
+                rating = 2
+                if lane not in planned_dests.values():
+                    rating = 3
+            dest_rating[lane] = rating
+        if dest_rating:
+            best_rating = max(dest_rating.values())
+            for rated_dest in dest_rating.keys():
+                if dest_rating[rated_dest] == best_rating:
+                    dest = rated_dest
+                    break
     if dest is None:
-        # if ship[const.NAME] in ship_path and ship_path[ship[const.NAME]]:
         if ship_path:
             dest = ship_path.pop()
     else:
@@ -128,3 +148,24 @@ def get_system_by_name(name, systems):
         if name == system[const.NAME]:
             return system
     return None
+
+
+def remove_arrived_destinations(ships, planned_dests):
+    """
+    Remove any destinations we've arrived at from the planned destinations
+    """
+    for ship in ships:
+        if ship[const.NAME] in planned_dests:
+            if planned_dests[ship[const.NAME]] == ship[const.LOCATION]:
+                del planned_dests[ship[const.NAME]]
+
+
+def add_ships_visited(ships, ships_visted):
+    """
+    Add any current locations to the list of places visited
+    """
+    for ship in ships:
+        if ship[const.NAME] not in ships_visted:
+            ships_visted[ship[const.NAME]] = []
+        if ship[const.LOCATION] not in ships_visted[ship[const.NAME]]:
+            ships_visted[ship[const.NAME]].append(ship[const.LOCATION])
